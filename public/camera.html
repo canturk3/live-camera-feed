@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Camera Feed</title>
+</head>
+<body>
+    <video id="cameraFeed" autoplay></video>
+
+    <script>
+        var video = document.querySelector("#cameraFeed");
+
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    video.srcObject = stream;
+                })
+                .catch(function (err0r) {
+                    console.log("Something went wrong!");
+                });
+        }
+    </script>
+</body>
+</html>
