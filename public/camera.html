@@ -1,23 +1,130 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Camera Feed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #D3D3D3, #808080);
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-y: scroll;
+            scroll-behavior: smooth;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #cameraFeed {
+            width: 100%;
+            max-width: 300px;
+            border: 4px solid #808080;
+            box-shadow: 0 0 20px rgba(128, 128, 128, 0.8);
+            animation: pulse 2s infinite;
+            position: absolute;
+            transition: all 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        #recordButton {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #808080;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(128, 128, 128, 0.5);
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 4px 10px rgba(128, 128, 128, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(128, 128, 128, 0.8); }
+        }
+
+        #recordButton:hover {
+            background-color: #696969;
+            transform: scale(1.1);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        #bouncingCameras {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
 </head>
 <body>
-    <video id="cameraFeed" autoplay></video>
+    <div id="container">
+        <h1 class="header">Camera Feed</h1>
+        <video id="cameraFeed" autoplay></video>
+        <button id="recordButton">Record</button>
+        <p class="footer">Serious Camera Page - Stay Focused!</p>
+    </div>
 
+    <script src="cameraFeed.js"></script>
     <script>
-        var video = document.querySelector("#cameraFeed");
+        var cameraFeed = document.getElementById('cameraFeed');
+        var speedX = 2, speedY = 2;
+        var posX = 100, posY = 100;
+        var directionX = Math.random() > 0.5 ? 1 : -1;  // randomize initial direction
+        var directionY = Math.random() > 0.5 ? 1 : -1;  // randomize initial direction
 
-        if (navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then(function (stream) {
-                    video.srcObject = stream;
-                })
-                .catch(function (err0r) {
-                    console.log("Something went wrong!");
-                });
+        function bounceCameraFeed() {
+            var rect = cameraFeed.getBoundingClientRect();
+            var width = rect.width;
+            var height = rect.height;
+
+            if (posX + width > window.innerWidth || posX < 0) {
+                directionX *= -1;
+            }
+
+            if (posY + height > window.innerHeight || posY < 0) {
+                directionY *= -1;
+            }
+
+            posX += speedX * directionX;
+            posY += speedY * directionY;
+
+            cameraFeed.style.left = posX + "px";
+            cameraFeed.style.top = posY + "px";
+
+            requestAnimationFrame(bounceCameraFeed);
         }
+
+        bounceCameraFeed();
     </script>
 </body>
 </html>
